@@ -221,8 +221,13 @@ class Bot(object):
             opponent_killable_cells = [c for c in opponent_living_cells if c.get_alive_neighbors() == 3]
 
             if my_savable_cells:
-                cell_to_save = random.choice(my_savable_cells)
-                save_cell = random.choice(cell_to_save.get_dead_neighbors())
+                cell_save_count = Counter()
+
+                for cell in my_savable_cells:
+                    for save_cell in cell.get_dead_neighbors():
+                        cell_save_count[save_cell] += 1
+
+                save_cell = cell_save_count.most_common(1)[0][0]
 
                 sys.stdout.write('birth {},{} {},{} {},{}\n'.format(
                     save_cell.x, save_cell.y,

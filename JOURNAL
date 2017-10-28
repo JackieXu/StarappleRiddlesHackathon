@@ -26,3 +26,5 @@ A chronologically ordered list of the actions taken during the hackathon.
 15:15   -   Expand "Sacrifice and rebirth" to:
                 - Prioritize sacrificing cells that are spawning cells for the
                   opponent.
+15:45   -   Expand strategy to save own cells by checking coordinates that
+            overlap. Prioritize the coordinate that saves the most cells.
