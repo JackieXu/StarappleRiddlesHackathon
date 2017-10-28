@@ -4,3 +4,4 @@ A chronologically ordered list of the actions taken during the hacakathon.
 
 10:45   -   Created git repository, and added README.
 11:00   -   Read game rules and added initial version of input parsing.
+11:15   -   Updated parsing of possible input types
