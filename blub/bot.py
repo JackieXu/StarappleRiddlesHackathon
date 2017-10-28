@@ -186,5 +186,5 @@ class Bot(object):
         if cell_to_kill:
             sys.stdout.write('kill {},{}\n'.format(cell_to_kill.x, cell_to_kill.y))
         else:
-            sys.stdout.write('pass\n')
+            sys.stdout.write('no_moves\n')
         sys.stdout.flush()
