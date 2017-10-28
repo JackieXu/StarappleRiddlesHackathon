@@ -135,7 +135,7 @@ class Bot(object):
 
     def perform_action(self, type, time):
         if type == 'move':
-            self._kill_random_opponent_cell()
+            self._do_move()
         else:
             raise KeyError('Unknown action type: {}'.format(type))
 
@@ -173,7 +173,7 @@ class Bot(object):
                 neighbor = self.field[n[0]][n[1]]
                 cell.add_neighbor(neighbor)
 
-    def _kill_random_opponent_cell(self):
+    def _do_move(self):
         opponent_cells = []
 
         for row in self.field:
