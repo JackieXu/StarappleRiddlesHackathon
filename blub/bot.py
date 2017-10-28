@@ -143,4 +143,7 @@ class Bot(object):
 
         cell_to_kill = random.choice(opponent_cells)
 
-        print('kill {},{}'.format(cell_to_kill.x, cell_to_kill.y))
+        if cell_to_kill:
+            print('kill {},{}'.format(cell_to_kill.x, cell_to_kill.y))
+        else:
+            print('pass')
