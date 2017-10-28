@@ -11,3 +11,10 @@ A chronologically ordered list of the actions taken during the hacakathon.
 12:30   -   Started with implementing a new strategy ("Kill the live ones"):
                 - Find out which cells will stay alive.
                 - Kill random opponent cell from one of those cells.
+13:00   -   Implemented "Kill the live ones".
+13:15   -   Started with implemented a new strategy ("Sacrifice and rebirth"):
+                - Sacrifice two cells that will die anyway
+                    - If this is not possible, switch to "Kill the live ones".
+                - Create new cell in a spot to keep a cell that will:
+                    - Keep a different dying cell of my own alive; or, if not available
+                    - Kill an opponent cell that stays alive.
