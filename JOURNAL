@@ -28,3 +28,5 @@ A chronologically ordered list of the actions taken during the hackathon.
                   opponent.
 15:45   -   Expand strategy to save own cells by checking coordinates that
             overlap. Prioritize the coordinate that saves the most cells.
+16:00   -   Expand strategy to find overlapping coordinates that kill multiple
+            opponent cells.

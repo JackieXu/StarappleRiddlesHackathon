@@ -235,14 +235,13 @@ class Bot(object):
                     cells_to_sacrifice[1].x, cells_to_sacrifice[1].y,
                 ))
             elif opponent_killable_cells:
-                highest_spawn_count = 0
-                cell_to_kill = opponent_killable_cells[0]
+                cell_kill_count = Counter()
 
-                for cell in opponent_killable_cells[1:]:
-                    if len(cell.get_rebirthing_neighbors()) > highest_spawn_count:
-                        cell_to_kill = cell
+                for cell in opponent_killable_cells:
+                    for kill_cell in cell.get_dead_neighbors():
+                        cell_kill_count[kill_cell] += 1
 
-                kill_spot = random.choice(cell_to_kill.get_dead_neighbors())
+                kill_spot = cell_kill_count.most_common(1)[0][0]
 
                 sys.stdout.write('birth {},{} {},{} {},{}\n'.format(
                     kill_spot.x, kill_spot.y,
