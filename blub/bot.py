@@ -15,6 +15,9 @@ class Cell(object):
             self.neighbors.append(cell)
             cell.add_neighbor(self)
 
+    def get_rebirthing_neighbors(self):
+        return [n for n in self.neighbors if n.get_next_state() == 'alive']
+
     def get_alive_neighbors(self):
         return [n for n in self.neighbors if n.is_alive]
 
@@ -206,7 +209,13 @@ class Bot(object):
                     cells_to_sacrifice[1].x, cells_to_sacrifice[1].y,
                 ))
             elif opponent_killable_cells:
-                cell_to_kill = random.choice(opponent_killable_cells)
+                highest_spawn_count = 0
+                cell_to_kill = opponent_killable_cells[0]
+
+                for cell in opponent_killable_cells[1:]:
+                    if len(cell.get_rebirthing_neighbors()) > highest_spawn_count:
+                        cell_to_kill = cell
+
                 kill_spot = random.choice(cell_to_kill.get_dead_neighbors())
 
                 sys.stdout.write('birth {},{} {},{} {},{}\n'.format(
