@@ -12,3 +12,6 @@ setup(
     packages=find_packages('.', exclude=('tests',)),
 )
 
+# Needed to run on Riddles platform.
+if __name__  == '__main__':
+    pass
