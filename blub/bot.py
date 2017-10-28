@@ -1,3 +1,4 @@
+import random
 import sys
 
 
@@ -5,7 +6,7 @@ class Cell(object):
     def __init__(self, x, y, owner_id, is_alive):
         self.x = x
         self.y = y
-        self.owner_id = None
+        self.owner_id = owner_id
         self.is_alive = is_alive
 
     def __str__(self):
@@ -99,7 +100,7 @@ class Bot(object):
             if type == 'round':
                 self.round = int(value)
             elif type == 'field':
-                self.field = value
+                self._parse_state(value.split(','))
             else:
                 raise KeyError('Unknown key: {}'.format(type))
         elif player in self.players:
@@ -111,7 +112,10 @@ class Bot(object):
             raise KeyError('Unknown player: {}'.format(player))
 
     def perform_action(self, type, time):
-        pass
+        if type == 'move':
+            self._kill_random_opponent_cell()
+        else:
+            raise KeyError('Unknown action type: {}'.format(type))
 
     def shutdown(self):
         self._should_shutdown = True
@@ -120,11 +124,23 @@ class Bot(object):
         self.field = [[None] * self.field_width for _ in range(self.field_height)]
 
         for index, cell_owner in enumerate(field):
-            column = index // self.field_width
-            row = index % self.field_width
+            column = index % self.field_width
+            row = index // self.field_width
 
             cell_is_alive = cell_owner != '.'
 
             cell = Cell(column, row, cell_owner, cell_is_alive)
 
             self.field[row][column] = cell
+
+    def _kill_random_opponent_cell(self):
+        opponent_cells = []
+
+        for row in self.field:
+            for cell in row:
+                if cell.owner_id == self.opponent_id:
+                    opponent_cells.append(cell)
+
+        cell_to_kill = random.choice(opponent_cells)
+
+        print('kill {},{}'.format(cell_to_kill.x, cell_to_kill.y))
