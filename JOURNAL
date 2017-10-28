@@ -20,3 +20,4 @@ A chronologically ordered list of the actions taken during the hackathon.
                     - Kill an opponent cell that stays alive.
 13:45   -   Took a lunch break
 14:15   -   Implemented "Sacrifice and rebirth"
+14:30   -   Fixed bug in "Sacrifice and rebirth" where it only looked at corner cells.
