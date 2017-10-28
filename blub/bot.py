@@ -15,6 +15,9 @@ class Cell(object):
             self.neighbors.append(cell)
             cell.add_neighbor(self)
 
+    def get_dead_neighbors(self):
+        return [n for n in self.neighbors if not n.is_alive]
+
     def get_next_state(self):
         alive_neighbors = len([n for n in self.neighbors if n.is_alive])
 
@@ -174,17 +177,49 @@ class Bot(object):
                 cell.add_neighbor(neighbor)
 
     def _do_move(self):
-        opponent_cells = []
+        my_dying_cells = []
+        opponent_living_cells = []
 
         for row in self.field:
             for cell in row:
+                if cell.owner_id == self.id and cell.get_next_state() == 'dead':
+                    my_dying_cells.append(cell)
                 if cell.owner_id == self.opponent_id and cell.get_next_state() == 'alive':
-                    opponent_cells.append(cell)
+                    opponent_living_cells.append(cell)
 
+        if len(my_dying_cells) >= 2:
+            cells_to_sacrifice = random.sample(my_dying_cells, k=2)
+            my_dying_cells = [c for c in my_dying_cells if c not in cells_to_sacrifice]
+            my_savable_cells = [c for c in my_dying_cells if len(c.neighbors) == 2]
+            opponent_killable_cells = [c for c in opponent_living_cells if len(c.neighbors) == 3]
+
+            if my_savable_cells:
+                cell_to_save = random.choice(my_savable_cells)
+                save_cell = random.choice(cell_to_save.get_dead_neighbors())
+
+                sys.stdout.write('birth {},{} {},{} {},{}\n'.format(
+                    save_cell.x, save_cell.y,
+                    cells_to_sacrifice[0].x, cells_to_sacrifice[0].y,
+                    cells_to_sacrifice[1].x, cells_to_sacrifice[1].y,
+                ))
+            elif opponent_killable_cells:
+                cell_to_kill = random.choice(opponent_killable_cells)
+                kill_spot = random.choice(cell_to_kill.get_dead_neighbors())
+                sys.stdout.write('birth {},{} {},{} {},{}\n'.format(
+                    kill_spot.x, kill_spot.y,
+                    cells_to_sacrifice[0].x, cells_to_sacrifice[0].y,
+                    cells_to_sacrifice[1].x, cells_to_sacrifice[1].y,
+                ))
+            else:
+                self._kill_random_opponent_cell(opponent_living_cells)
+        else:
+            self._kill_random_opponent_cell(opponent_living_cells)
+        sys.stdout.flush()
+
+    def _kill_random_opponent_cell(self, opponent_cells):
         cell_to_kill = random.choice(opponent_cells)
 
         if cell_to_kill:
             sys.stdout.write('kill {},{}\n'.format(cell_to_kill.x, cell_to_kill.y))
         else:
             sys.stdout.write('no_moves\n')
-        sys.stdout.flush()
