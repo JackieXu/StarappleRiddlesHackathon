@@ -3,6 +3,18 @@ import sys
 
 class Bot(object):
     def __init__(self):
+        self.id = None
+        self.name = None
+        self.opponent_id = None
+        self.player_names = None
+
+        self.timebank = None
+        self.time_per_move = None
+        self.max_rounds = None
+
+        self.field_width = None
+        self.field_height = None
+
         self._should_shutdown = False
         self._command_registry = {
             'settings': self.update_settings,
@@ -29,7 +41,24 @@ class Bot(object):
             command_func(*input_data)
 
     def update_settings(self, key, value):
-        pass
+        if key == 'timebank':
+            self.timebank = int(value)
+        elif key == 'time_per_move':
+            self.time_per_move = int(value)
+        elif key == 'player_names':
+            self.player_names = value.split(',')
+        elif key == 'your_bot':
+            self.name = value
+        elif key == 'your_botid':
+            self.id = int(value)
+        elif key == 'field_width':
+            self.field_width = int(value)
+        elif key == 'field_height':
+            self.field_height = int(value)
+        elif key == 'max_rounds':
+            self.max_rounds = int(value)
+        else:
+            raise KeyError('Unknown key: {}'.format(key))
 
     def update_state(self, player, type, value):
         pass
