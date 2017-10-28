@@ -8,3 +8,6 @@ A chronologically ordered list of the actions taken during the hacakathon.
 11:45   -   Added parsing of game settings and states.
 12:00   -   Started with initial strategy of always killing a random opponent
             cell.
+12:30   -   Started with implementing a new strategy ("Kill the live ones"):
+                - Find out which cells will stay alive.
+                - Kill random opponent cell from one of those cells.

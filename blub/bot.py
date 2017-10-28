@@ -8,6 +8,28 @@ class Cell(object):
         self.y = y
         self.owner_id = owner_id
         self.is_alive = is_alive
+        self.neighbors = []
+
+    def add_neighbor(self, cell):
+        if cell not in self.neighbors:
+            self.neighbors.append(cell)
+            cell.add_neighbor(self)
+
+    def get_next_state(self):
+        alive_neighbors = len([n for n in self.neighbors if n.is_alive])
+
+        if self.is_alive:
+            if alive_neighbors < 2:
+                return 'dead'
+            elif alive_neighbors < 4:
+                return 'alive'
+            else:
+                return 'dead'
+        else:
+            if alive_neighbors == 3:
+                return 'alive'
+            else:
+                return 'dead'
 
     def __str__(self):
         state = 'alive' if self.is_alive else 'dead'
@@ -131,14 +153,32 @@ class Bot(object):
 
             cell = Cell(column, row, cell_owner, cell_is_alive)
 
+            # Add neighbors
+            possible_neighbors = [
+                (row - 1, column - 1),
+                (row - 1, column),
+                (row - 1, column + 1),
+                (row, column - 1),
+            ]
+
             self.field[row][column] = cell
+
+            for n in possible_neighbors:
+                if n[0] < 0:
+                    continue
+
+                if n[1] < 0 or n[1] >= self.field_width:
+                    continue
+
+                neighbor = self.field[n[0]][n[1]]
+                cell.add_neighbor(neighbor)
 
     def _kill_random_opponent_cell(self):
         opponent_cells = []
 
         for row in self.field:
             for cell in row:
-                if cell.owner_id == self.opponent_id:
+                if cell.owner_id == self.opponent_id and cell.get_next_state() == 'alive':
                     opponent_cells.append(cell)
 
         cell_to_kill = random.choice(opponent_cells)
