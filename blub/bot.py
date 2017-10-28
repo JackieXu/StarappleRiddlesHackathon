@@ -1,6 +1,8 @@
 import random
 import sys
 
+from collections import Counter
+
 
 class Cell(object):
     def __init__(self, x, y, owner_id, is_alive):
@@ -10,10 +12,23 @@ class Cell(object):
         self.is_alive = is_alive
         self.neighbors = []
 
+        self._next_state = None
+
     def add_neighbor(self, cell):
         if cell not in self.neighbors:
             self.neighbors.append(cell)
             cell.add_neighbor(self)
+
+    def get_next_state_owner_id(self):
+        if self.get_next_state() == 'alive':
+            owner_counts = Counter()
+            for n in self.get_alive_neighbors():
+                owner_counts[n.owner_id] += 1
+
+            # Gets the zeroth index of the zeroth item of the 1-sized list.
+            return owner_counts.most_common(1)[0][0]
+
+        return None
 
     def get_rebirthing_neighbors(self):
         return [n for n in self.neighbors if n.get_next_state() == 'alive']
@@ -25,20 +40,15 @@ class Cell(object):
         return [n for n in self.neighbors if not n.is_alive]
 
     def get_next_state(self):
-        alive_neighbors = len([n for n in self.neighbors if n.is_alive])
+        if not self._next_state:
+            alive_neighbors = len([n for n in self.neighbors if n.is_alive])
 
-        if self.is_alive:
-            if alive_neighbors < 2:
-                return 'dead'
-            elif alive_neighbors < 4:
-                return 'alive'
+            if self.is_alive:
+                self._next_state = 'alive' if alive_neighbors in [2, 3] else 'dead'
             else:
-                return 'dead'
-        else:
-            if alive_neighbors == 3:
-                return 'alive'
-            else:
-                return 'dead'
+                self._next_state = 'alive' if alive_neighbors == 3 else 'dead'
+
+        return self._next_state
 
     def __str__(self):
         state = 'alive' if self.is_alive else 'dead'
@@ -194,7 +204,18 @@ class Bot(object):
                     opponent_living_cells.append(cell)
 
         if len(my_dying_cells) >= 2:
-            cells_to_sacrifice = random.sample(my_dying_cells, k=2)
+            spawn_counts = {}
+            for cell in my_dying_cells:
+                opponent_spawn_count = len([c for c in cell.get_rebirthing_neighbors()
+                                            if c.get_next_state_owner_id() == self.opponent_id])
+                own_spawn_count = len([c for c in cell.get_rebirthing_neighbors()
+                                       if c.get_next_state_owner_id() == self.id])
+
+                spawn_counts[cell] = (opponent_spawn_count, own_spawn_count)
+
+            cells_to_sacrifice = sorted(spawn_counts.items(), key=lambda x: (x[1][0], x[1][1]))
+            cells_to_sacrifice = cells_to_sacrifice[:2]
+
             my_dying_cells = [c for c in my_dying_cells if c not in cells_to_sacrifice]
             my_savable_cells = [c for c in my_dying_cells if c.get_alive_neighbors() == 2]
             opponent_killable_cells = [c for c in opponent_living_cells if c.get_alive_neighbors() == 3]

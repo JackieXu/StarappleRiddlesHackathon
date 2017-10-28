@@ -23,3 +23,6 @@ A chronologically ordered list of the actions taken during the hackathon.
 14:30   -   Fixed bug in "Sacrifice and rebirth" where it only looked at corner cells.
 14:45   -   Expand "Sacrifice and rebirth" to:
                 - Prioritize killing opponent cells that will generate more cells.
+15:15   -   Expand "Sacrifice and rebirth" to:
+                - Prioritize sacrificing cells that are spawning cells for the
+                  opponent.
