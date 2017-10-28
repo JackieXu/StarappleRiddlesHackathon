@@ -153,6 +153,7 @@ class Bot(object):
             raise KeyError('Unknown player: {}'.format(player))
 
     def perform_action(self, type, time):
+        self.timebank += time
         if type == 'move':
             self._do_move()
         else:
@@ -218,7 +219,8 @@ class Bot(object):
 
             my_dying_cells = [c for c in my_dying_cells if c not in cells_to_sacrifice]
             my_savable_cells = [c for c in my_dying_cells if c.get_alive_neighbors() == 2]
-            opponent_killable_cells = [c for c in opponent_living_cells if c.get_alive_neighbors() == 3]
+            opponent_killable_cells = [c for c in opponent_living_cells
+                                       if c.get_alive_neighbors() == 3]
 
             if my_savable_cells:
                 cell_save_count = Counter()
@@ -249,15 +251,20 @@ class Bot(object):
                     cells_to_sacrifice[1].x, cells_to_sacrifice[1].y,
                 ))
             else:
-                self._kill_random_opponent_cell(opponent_living_cells)
+                self._kill_opponent_cell(opponent_living_cells)
         else:
-            self._kill_random_opponent_cell(opponent_living_cells)
+            self._kill_opponent_cell(opponent_living_cells)
         sys.stdout.flush()
 
     @staticmethod
-    def _kill_random_opponent_cell(opponent_cells):
+    def _kill_opponent_cell(opponent_cells):
         if opponent_cells:
-            cell_to_kill = random.choice(opponent_cells)
+            spawn_count = Counter()
+            for cell in opponent_cells:
+                spawn_count[cell] += len([c for c in cell.get_rebirthing_neighbors()
+                                          if c.get_next_state_owner_id() == opponent_cells])
+
+            cell_to_kill = spawn_count.most_common(1)[0][0]
             sys.stdout.write('kill {},{}\n'.format(cell_to_kill.x, cell_to_kill.y))
         else:
             sys.stdout.write('no_moves\n')
